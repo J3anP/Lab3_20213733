@@ -25,7 +25,7 @@
             <th>Número Habitación</th>
 
         </tr>
-        <tr th:each="paciente,obj: ${listaPacienteClinica}">
+        <tr th:each="paciente,obj: ${listPacienteClinica}">
             <td th:text="${obj.index+1}"> </td>
             <td th:text="${paciente.nombre}"></td>
             <td th:text="${paciente.edad}"></td>
