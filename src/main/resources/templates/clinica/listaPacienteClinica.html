@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp"
+          crossorigin="anonymous">
+    <title>Pacientes por clinica</title>
+</head>
+<body>
+<div class="container">
+    <h2>Lista de pacientes por clinica</h2>
+
+
+
+    <table class="table table-sm">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Genero</th>
+            <th>Diagnóstico</th>
+            <th>Fecha Cita</th>
+            <th>Número Habitación</th>
+
+        </tr>
+        <tr th:each="paciente,obj: ${listaPacienteClinica}">
+            <td th:text="${obj.index+1}"> </td>
+            <td th:text="${paciente.nombre}"></td>
+            <td th:text="${paciente.edad}"></td>
+            <td th:text="${paciente.genero}"></td>
+
+            <td th:text="${paciente.diagnostico}"></td>
+
+            <td th:text="${paciente.fecha_cita}"></td>
+            <td th:text="${paciente.numero_habitacion}"></td>
+
+        </tr>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
+        crossorigin="anonymous"></script>
+</body>
+</html>
