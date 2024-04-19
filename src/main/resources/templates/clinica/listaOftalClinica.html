@@ -21,7 +21,7 @@
             <th>Correo</th>
 
         </tr>
-        <tr th:each="oftalmologo,obj: ${listaOftalClinica}">
+        <tr th:each="oftalmologo,obj: ${listOftalClinica}">
             <td th:text="${obj.index+1}"> </td>
             <td th:text="${oftalmologo.nombre}"></td>
             <td th:text="${oftalmologo.correo}"></td>

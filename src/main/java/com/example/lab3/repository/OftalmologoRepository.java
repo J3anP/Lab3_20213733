@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 public interface OftalmologoRepository extends JpaRepository<Oftalmologo,Integer> {
 
-    List<Oftalmologo> findByClinica_id(int clinica_id);
+    List<Oftalmologo> buscarPorClinicaId(int clinica_id);
 }

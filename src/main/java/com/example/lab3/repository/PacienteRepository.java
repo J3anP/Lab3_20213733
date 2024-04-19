@@ -11,5 +11,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface PacienteRepository extends JpaRepository<Paciente,Integer>{
-    List<Paciente> findByClinica_id(int clinica_id);
+    List<Paciente> buscarPorClinicaId(int clinica_id);
 }

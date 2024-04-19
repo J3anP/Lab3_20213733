@@ -26,20 +26,20 @@ final PacienteRepository pacienteRepository;
         this.pacienteRepository = pacienteRepository;
     }
 
-    @GetMapping("/listarClinica")
-    public String listar(Model model) {
+    @GetMapping("/listClinica")
+    public String list(Model model) {
 
         model.addAttribute("listaClinicas", clinicaRepository.findAll());
         return "clinica/listaClinicas";
     }
 
-    @GetMapping("/listarOftalClinica")
-    public String listarOftalClinica(@RequestParam("clinica_id") int clinica_id, Model model) {
-        List<Oftalmologo> listaOftalClinica= oftalmologoRepository.findByClinica_id(clinica_id);
-        model.addAttribute("listaOftalClinica", listaOftalClinica);
+    @GetMapping("/listOftalClinica")
+    public String listOftalClinica(@RequestParam("clinica_id") int clinica_id, Model model) {
+        List<Oftalmologo> listOftalClinica= oftalmologoRepository.buscarPorClinicaId(clinica_id);
+        model.addAttribute("listOftalClinica", listOftalClinica);
 
         return "clinica/listaOftalClinica";
     }
 
-   
+
 }

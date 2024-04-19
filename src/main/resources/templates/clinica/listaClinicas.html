@@ -28,8 +28,8 @@
             <td th:text="${clinica.nombre}"></td>
             <td th:text="${clinica.direccion}"></td>
             <td th:text="${clinica.telefono}"></td>
-            <td><a th:href="@{'/listarOftalClinica?clinica_id=' + ${clinica.id}}">Oftalmologos</a></td>
-            <td><a th:href="@{'/listarPacienteClinica?clinica_id=' + ${clinica.id}}">Pacientes</a></td>
+            <td><a th:href="@{'/listOftalClinica?clinica_id=' + ${clinica.id}}">Oftalmologos</a></td>
+            <td><a th:href="@{'/listPacienteClinica?clinica_id=' + ${clinica.id}}">Pacientes</a></td>
         </tr>
     </table>
 </div>
