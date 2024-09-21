@@ -68,14 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     dummyService.LOGIN_CALL(username.getText().toString(),password.getText().toString()).enqueue(new Callback<UserLogin>() {
                         @Override
                         public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
-                            if (response.isSuccessful()){
-                                UserLogin userPom = response.body();
-                                Intent intent = new Intent(MainActivity.this, PomodoroActivity.class);
-                                intent.putExtra("user",userPom);
-                                startActivity(intent);
-                            }else{
-                                Toast.makeText(MainActivity.this,"Authentication problem",Toast.LENGTH_LONG).show();
-                            }
+                            login(response);
                         }
 
                         @Override
@@ -89,6 +82,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void login(Response<UserLogin> response) {
+        if (response.isSuccessful()) {
+            UserLogin userPom = response.body();
+            launchPomodoro(userPom);
+        } else {
+            showAuthenticationError();
+        }
+    }
+
+    private void launchPomodoro(UserLogin userPom) {
+        Intent intent = new Intent(MainActivity.this, PomodoroActivity.class);
+        intent.putExtra("user", userPom);
+        startActivity(intent);
+    }
+
+    private void showAuthenticationError() {
+        Toast.makeText(MainActivity.this, "Authentication problem", Toast.LENGTH_LONG).show();
+    }
 
     public boolean haveInternet(){
         //Manejo de la conexión de internet

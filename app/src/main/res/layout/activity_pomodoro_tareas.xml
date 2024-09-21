@@ -38,7 +38,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/t_tareas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -62,12 +62,10 @@
         app:layout_anchorGravity="center">
 
         <Spinner
-            android:id="@+id/spinner_categoria"
+            android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="6dp"
-            android:entries="@array/categoria_list"
-            android:popupBackground="@drawable/spinner_border"
             android:spinnerMode="dropdown" />
 
     </LinearLayout>

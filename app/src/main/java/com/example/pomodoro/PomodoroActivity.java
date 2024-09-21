@@ -2,6 +2,7 @@ package com.example.pomodoro;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -75,12 +76,6 @@ public class PomodoroActivity extends AppCompatActivity {
             finish();
         });
 
-        //Manejo de retrofit
-        DummyService dummyService = new Retrofit.Builder()
-                .baseUrl("https://dummyjson.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(DummyService.class);
 
         Intent intent = getIntent();
         userPom = (UserLogin) intent.getSerializableExtra("user");
@@ -105,13 +100,7 @@ public class PomodoroActivity extends AppCompatActivity {
             btPlay.setVisibility(View.GONE);
             btRestart.setVisibility(View.VISIBLE);
 
-            Data dataBuilder = new Data.Builder()
-                    .putInt("minutes", 25)
-                    .build();
-
-            WorkRequest workRequest = new OneTimeWorkRequest.Builder(TimerWorker.class)
-                    .setInputData(dataBuilder)
-                    .build();
+            WorkRequest workRequest = crearWorkRequest(25);
 
             WorkManager
                     .getInstance(this)
@@ -123,49 +112,41 @@ public class PomodoroActivity extends AppCompatActivity {
                         if (workInfo != null) {
                             //Manejo del countdown
                             if (workInfo.getState() == WorkInfo.State.RUNNING) {
-                                Data data = workInfo.getProgress();
-
-                                int minRemaining = data.getInt("minRemaining", 0);
-                                int secRemaining= data.getInt("secRemaining", 0); // Obtiene los segundos correctamente
-
-                                String timeCorrect= correctorTimer(minRemaining, secRemaining);
-                                timer.setText(timeCorrect);
+                                actualizarTemporizador(workInfo);
                             }else
-                                if(workInfo.getState()== WorkInfo.State.SUCCEEDED){
-                                rest.setText("En descanso");
-                                //rest.setTextColor("Color.parseColor(\"#FF00FF\")");
+                                if(workInfo.getState()== WorkInfo.State.SUCCEEDED) {
+                                    rest.setText("En descanso");
+                                    //rest.setTextColor("Color.parseColor(\"#FF00FF\")");
 
-                                //Otro workmanager para el tiempo de descanso = 5 min
-                                Data dataBuilder2 = new Data.Builder()
-                                        .putInt("minutes", 5)
-                                        .build();
+                                    obtenerListaTareas(userPom);
 
-                                WorkRequest workRequest2 = new OneTimeWorkRequest.Builder(TimerWorker.class)
-                                        .setInputData(dataBuilder2)
-                                        .build();
+                                    //Otro workmanager para el tiempo de descanso = 5 min
+                                    WorkRequest workRequest2 = crearWorkRequest(5);
 
-                                WorkManager
-                                        .getInstance(this)
-                                        .enqueue(workRequest2);
+                                    WorkManager
+                                            .getInstance(this)
+                                            .enqueue(workRequest2);
 
-                                WorkManager.getInstance(this)
-                                        .getWorkInfoByIdLiveData(workRequest2.getId())
-                                        .observe(PomodoroActivity.this,workInfo2 -> {
-                                            if(workInfo2!=null){
-                                                manejarEstadoTrabajo(workInfo2);
-                                            }
+                                    WorkManager.getInstance(this)
+                                            .getWorkInfoByIdLiveData(workRequest2.getId())
+                                            .observe(PomodoroActivity.this, workInfo2 -> {
+                                                if (workInfo2 != null) {
+                                                    //manejarEstadoTrabajo(workInfo2);
+                                                    if (workInfo2.getState() == WorkInfo.State.RUNNING) {
+                                                        actualizarTemporizador(workInfo2);
+                                                    } else if (workInfo2.getState() == WorkInfo.State.SUCCEEDED) {
+                                                        dialogFinRest();
+                                                    }
+                                                }
 
-                                        });
+                                            });
 
-                                //No sé porque se bugea horrible con el request de internet
-                                //if(haveInternet()){
-                                    getListaTareas(userPom);
-                                //}
-                            }
+                                }
                         } else {
                             Log.d("msg-test", "work info == null ");
                         }
                     });
+
         });
 
         btRestart.setOnClickListener(view -> {
@@ -175,13 +156,7 @@ public class PomodoroActivity extends AppCompatActivity {
             rest.setText("Descanso: 05:00");
             WorkManager.getInstance(this).cancelAllWork();
 
-            Data dataBuilder = new Data.Builder()
-                    .putInt("minutes", 25)
-                    .build();
-
-            WorkRequest workRequest = new OneTimeWorkRequest.Builder(TimerWorker.class)
-                    .setInputData(dataBuilder)
-                    .build();
+            WorkRequest workRequest = crearWorkRequest(25);
 
             WorkManager
                     .getInstance(this)
@@ -193,26 +168,16 @@ public class PomodoroActivity extends AppCompatActivity {
                         if (workInfo != null) {
                             //Manejo del countdown
                             if (workInfo.getState() == WorkInfo.State.RUNNING) {
-                                Data data = workInfo.getProgress();
-
-                                int minRemaining = data.getInt("minRemaining", 0);
-                                int secRemaining= data.getInt("secRemaining", 0); // Obtiene los segundos correctamente
-
-                                String timeCorrect= correctorTimer(minRemaining, secRemaining);
-                                timer.setText(timeCorrect);
+                                actualizarTemporizador(workInfo);
                             }else
                                 if(workInfo.getState()== WorkInfo.State.SUCCEEDED){
                                 rest.setText("En descanso");
                                 //rest.setTextColor("Color.parseColor(\"#FF00FF\")");
 
-                                //Otro workmanager para el tiempo de descanso = 5 min
-                                Data dataBuilder2 = new Data.Builder()
-                                        .putInt("minutes", 5)
-                                        .build();
+                                obtenerListaTareas(userPom);
 
-                                WorkRequest workRequest2 = new OneTimeWorkRequest.Builder(TimerWorker.class)
-                                        .setInputData(dataBuilder2)
-                                        .build();
+                                //Otro workmanager para el tiempo de descanso = 5 min
+                                WorkRequest workRequest2 = crearWorkRequest(5);
 
                                 WorkManager
                                         .getInstance(this)
@@ -224,35 +189,37 @@ public class PomodoroActivity extends AppCompatActivity {
                                             if(workInfo2!=null){
                                                 manejarEstadoTrabajo(workInfo2);
                                             }
-
                                         });
 
-                                //No sé porque se bugea horrible con el request de internet
-                                //if(haveInternet()){
-                                getListaTareas(userPom);
-                                //}
-                            }
+
+                                }
                         } else {
                             Log.d("msg-test", "work info == null ");
                         }
                     });
+
         });
     }
 
-    private void getListaTareas(UserLogin u) {
-        dummyService.LISTA_TAREAS(u.getId()).enqueue(new Callback<TareaStats>() {
+    private void obtenerListaTareas(UserLogin userPom) {
+        DummyService dummyService = new Retrofit.Builder()
+                .baseUrl("https://dummyjson.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(DummyService.class);
+
+        dummyService.LISTA_TAREAS(userPom.getId()).enqueue(new Callback<TareaStats>() {
             @Override
             public void onResponse(Call<TareaStats> call, Response<TareaStats> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    procesarRespuestaTareas(response.body(), u);
-                } else {
-                    mostrarError("Error al obtener la lista de tareas");
+                if (response.isSuccessful()) {
+                    TareaStats tareaStats = response.body();
+                    procesarRespuestaTareas(tareaStats, userPom);
                 }
             }
 
             @Override
             public void onFailure(Call<TareaStats> call, Throwable throwable) {
-                mostrarError("Error de conexión: " + throwable.getMessage());
+                throwable.printStackTrace();
             }
         });
     }
@@ -274,9 +241,9 @@ public class PomodoroActivity extends AppCompatActivity {
                 })
                 .setCancelable(false);
 
-        Dialog dialog = dialogStart.create();
-        aplicarAnimacionAlDialogo(dialog);
-        dialog.show();
+        //Dialog dialog = dialogStart.create();
+        //aplicarAnimacionAlDialogo(dialog);
+        dialogStart.show();
     }
 
     private void lanzarActividadTareas(UserLogin u, Tarea[] tareas) {
@@ -289,6 +256,7 @@ public class PomodoroActivity extends AppCompatActivity {
     private void mostrarError(String mensaje) {
         Toast.makeText(PomodoroActivity.this, mensaje, Toast.LENGTH_SHORT).show();
     }
+
 
     //Maneje la lógica, pero había problemas de carga, así que decidí ponerlo en una AI para ver que me dice y me recomendo
     //separarlo
@@ -322,9 +290,9 @@ public class PomodoroActivity extends AppCompatActivity {
                 })
                 .setCancelable(false);
 
-        Dialog dialog = dialogFin.create();
-        aplicarAnimacionAlDialogo(dialog);
-        dialog.show();
+        //Dialog dialog = dialogFin.create();
+        //aplicarAnimacionAlDialogo(dialog);
+        dialogFin.show();
     }
 
     private void aplicarAnimacionAlDialogo(Dialog dialog) {
@@ -334,6 +302,16 @@ public class PomodoroActivity extends AppCompatActivity {
         });
     }
     /*---------------------------------------------*/
+
+    private WorkRequest crearWorkRequest(int minutos) {
+        Data data = new Data.Builder()
+                .putInt("minutes", minutos)
+                .build();
+
+        return new OneTimeWorkRequest.Builder(TimerWorker.class)
+                .setInputData(data)
+                .build();
+    }
 
     public String correctorTimer(int min, int sec) {
         //Para que que siempre se muestre con dos dígitos en el textView
