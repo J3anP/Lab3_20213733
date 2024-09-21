@@ -18,7 +18,11 @@
         <activity
             android:name=".PomodoroTareasActivity"
             android:exported="false"
-            android:theme="@style/Theme.Pomodoro" />
+            android:parentActivityName=".PomodoroActivity" />
+        <activity
+            android:name=".PomodoroActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -28,10 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".PomodoroActivity"
-            android:exported="false"
-            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>

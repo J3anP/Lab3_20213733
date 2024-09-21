@@ -39,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        /*
+        binding = ActivityMainBinding.inflate(this.getLayoutInflater());
+        setContentView(binding.getRoot());
+
+         */
         //Se busca el usuario y contraseña ingresados
         username = findViewById(R.id.edit_user);
         password = findViewById(R.id.edit_password);
