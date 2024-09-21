@@ -16,8 +16,7 @@
         android:backgroundTint="@color/md_theme_secondary_highContrast"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Pomodoro PUCP"
-        app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/baseline_power_new_24" />
+        app:titleTextColor="@android:color/white" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_container"

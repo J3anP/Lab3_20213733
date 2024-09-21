@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                             if (response.isSuccessful()){
                                 UserLogin userPom = response.body();
                                 Intent intent = new Intent(MainActivity.this, PomodoroActivity.class);
-                                Log.d("usuarioUsername",userPom.getUsername());
                                 intent.putExtra("user",userPom);
                                 startActivity(intent);
                             }else{
